@@ -77,6 +77,17 @@ public class JdbcUserDao implements UserDao {
         return true;
     }
 
+    @Override
+    public List<String> getAllUsernames(){
+        List<String> usernames = new ArrayList<>();
+        String sql = "SELECT username FROM tenmo_user";
+        SqlRowSet results = jdbcTemplate.queryForRowSet(sql);
+        while (results.next()) {
+            usernames.add(mapRowToUsername(results));
+        }
+        return usernames;
+    }
+
     private User mapRowToUser(SqlRowSet rs) {
         User user = new User();
         user.setUserId(rs.getLong("user_id"));
@@ -85,5 +96,13 @@ public class JdbcUserDao implements UserDao {
         user.setActivated(true);
         user.setAuthorities("USER");
         return user;
+    }
+
+
+
+    public String mapRowToUsername(SqlRowSet rs){
+        String username;
+        username = rs.getString("username");
+        return username;
     }
 }
