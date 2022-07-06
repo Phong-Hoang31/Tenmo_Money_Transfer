@@ -1,6 +1,6 @@
 BEGIN TRANSACTION;
 
-DROP TABLE IF EXISTS tenmo_user, account;
+DROP TABLE IF EXISTS tenmo_user, account, transaction;
 
 DROP SEQUENCE IF EXISTS seq_user_id, seq_account_id;
 
@@ -33,5 +33,23 @@ CREATE TABLE account (
 	CONSTRAINT FK_account_tenmo_user FOREIGN KEY (user_id) REFERENCES tenmo_user (user_id)
 );
 
+CREATE SEQUENCE seq_transaction_id
+  INCREMENT BY 1
+  START WITH 1
+  NO MAXVALUE;
+
+CREATE TABLE transaction(
+	transaction_id int NOT NULL DEFAULT nextval ('seq_transaction_id'),
+	sender_account_id int NOT NULL,
+	recipient_account_id int NOT NULL,
+	transaction_amount decimal (13, 2) NOT NULL,
+	date DATE NOT NULL,
+	time TIME NOT NULL,
+	CONSTRAINT PK_transaction PRIMARY KEY (transaction_id),
+	CONSTRAINT FK_transaction_account FOREIGN KEY (sender_account_id) REFERENCES account (account_id)
+	);
+	
+
+ROLLBACK;
 
 COMMIT;
