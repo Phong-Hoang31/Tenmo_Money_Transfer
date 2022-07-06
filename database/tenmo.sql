@@ -50,6 +50,4 @@ CREATE TABLE transaction(
 	);
 	
 
-ROLLBACK;
-
 COMMIT;
