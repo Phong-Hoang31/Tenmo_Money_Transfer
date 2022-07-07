@@ -31,8 +31,6 @@ public class JdbcAccountDao implements AccountDao {
         return balance;
     }
 
-
-
     private Account mapRowToAccount(SqlRowSet rs){
         Account account = new Account();
         account.setAccountId(rs.getLong("account_id"));
@@ -40,6 +38,4 @@ public class JdbcAccountDao implements AccountDao {
         account.setBalance(rs.getBigDecimal("balance"));
         return account;
     }
-
-
 }

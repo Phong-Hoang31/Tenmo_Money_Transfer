@@ -20,12 +20,12 @@ import java.util.List;
 public class UserController {
     private UserDao userDao;
     private AccountDao accountDao;
-    private TransactionDao transactionDao;
+    private TransferDao transferDao;
 
     public UserController(UserDao userDao, AccountDao accountDao) {
         this.userDao = userDao;
         this.accountDao = accountDao;
-//        this.transactionDao = transactionDao; TODO: uncomment this when TransactionDao is created
+//        this.transferDao = transferDao; TODO: uncomment this when TransactionDao is created
     }
 
     @RequestMapping(path = "{userId}/accounts/balance", method = RequestMethod.GET)

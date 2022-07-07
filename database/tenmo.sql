@@ -45,6 +45,7 @@ CREATE TABLE transfer(
 	transfer_amount decimal (13, 2) NOT NULL,
 	date DATE NOT NULL,
 	time TIME NOT NULL,
+	status VARCHAR NOT NULL,
 	CONSTRAINT PK_transfer PRIMARY KEY (transfer_id),
 	CONSTRAINT FK_transfer_sender_account_id FOREIGN KEY (sender_account_id) REFERENCES account (account_id),
 	CONSTRAINT FK_transfer_recipient_account_id FOREIGN KEY (recipient_account_id) REFERENCES account (account_id)
