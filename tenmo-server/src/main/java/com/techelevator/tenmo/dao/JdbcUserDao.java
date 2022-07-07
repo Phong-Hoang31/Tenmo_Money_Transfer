@@ -17,8 +17,7 @@ public class JdbcUserDao implements UserDao {
 
     private JdbcTemplate jdbcTemplate;
 
-    public JdbcUserDao(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    public JdbcUserDao(JdbcTemplate jdbcTemplate) {this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
@@ -78,7 +77,7 @@ public class JdbcUserDao implements UserDao {
     }
 
     @Override
-    public List<String> getAllUsernames(){
+    public List<String> getAllUsernames() {
         List<String> usernames = new ArrayList<>();
         String sql = "SELECT username FROM tenmo_user";
         SqlRowSet results = jdbcTemplate.queryForRowSet(sql);
@@ -99,8 +98,7 @@ public class JdbcUserDao implements UserDao {
     }
 
 
-
-    public String mapRowToUsername(SqlRowSet rs){
+    public String mapRowToUsername(SqlRowSet rs) {
         String username;
         username = rs.getString("username");
         return username;

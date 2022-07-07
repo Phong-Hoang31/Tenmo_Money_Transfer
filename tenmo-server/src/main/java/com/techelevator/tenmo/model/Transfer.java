@@ -4,19 +4,19 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-public class Transaction {
-    private Long transactionId;
+public class Transfer {
+    private Long transferId;
     private Long senderAccountId;
     private Long recipientAccountId;
     private BigDecimal amount;
     private LocalDate date;
     private LocalTime time;
 
-    public Transaction() {
+    public Transfer() {
     }
 
-    public Transaction(Long transactionId, Long senderAccountId, Long recipientAccountId, BigDecimal amount, LocalDate date, LocalTime time) {
-        this.transactionId = transactionId;
+    public Transfer(Long transferId, Long senderAccountId, Long recipientAccountId, BigDecimal amount, LocalDate date, LocalTime time) {
+        this.transferId = transferId;
         this.senderAccountId = senderAccountId;
         this.recipientAccountId = recipientAccountId;
         this.amount = amount;
@@ -24,12 +24,12 @@ public class Transaction {
         this.time = time;
     }
 
-    public Long getTransactionId() {
-        return transactionId;
+    public Long getTransferId() {
+        return transferId;
     }
 
-    public void setTransactionId(Long transactionId) {
-        this.transactionId = transactionId;
+    public void setTransferId(Long transferId) {
+        this.transferId = transferId;
     }
 
     public Long getSenderAccountId() {
@@ -74,8 +74,8 @@ public class Transaction {
 
     @Override
     public String toString() {
-        return "Transaction{" +
-                "transactionId=" + transactionId +
+        return "Transfer{" +
+                "transferId=" + transferId +
                 ", senderAccountId=" + senderAccountId +
                 ", recipientAccountId=" + recipientAccountId +
                 ", amount=" + amount +
