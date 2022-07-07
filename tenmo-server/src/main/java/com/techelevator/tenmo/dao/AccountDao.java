@@ -5,9 +5,9 @@ import java.util.List;
 
 public interface AccountDao {
 
-    BigDecimal getBalance(Long userId);
+    BigDecimal getBalance(int userId);
 
-    String getUsername(Long userId);
+    String getUsername(int userId);
 
 
 }

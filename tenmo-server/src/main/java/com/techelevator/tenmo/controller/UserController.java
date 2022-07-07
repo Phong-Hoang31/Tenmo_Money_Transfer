@@ -29,7 +29,7 @@ public class UserController {
     }
 
     @RequestMapping(path = "{userId}/accounts/balance", method = RequestMethod.GET)
-    public BigDecimal getBalance(@PathVariable Long userId, Principal principal) throws UserIdNotFoundException {
+    public BigDecimal getBalance(@PathVariable int userId, Principal principal) throws UserIdNotFoundException {
         if (principal.getName().equals(accountDao.getUsername(userId))) {
             return accountDao.getBalance(userId);
         } else {
@@ -39,7 +39,7 @@ public class UserController {
     }
 
     @RequestMapping(path = "{userId}/accounts/transfer", method = RequestMethod.GET)
-    public List<String> listOfUsers(@PathVariable Long userId, Principal principal) throws UserIdNotFoundException {
+    public List<String> listOfUsers(@PathVariable int userId, Principal principal) throws UserIdNotFoundException {
         if (principal.getName().equals(accountDao.getUsername(userId))) {
             return userDao.getAllUsernames();
         } else {

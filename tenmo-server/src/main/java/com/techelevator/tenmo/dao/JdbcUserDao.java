@@ -89,7 +89,7 @@ public class JdbcUserDao implements UserDao {
 
     private User mapRowToUser(SqlRowSet rs) {
         User user = new User();
-        user.setUserId(rs.getLong("user_id"));
+        user.setUserId(rs.getInt("user_id"));
         user.setUsername(rs.getString("username"));
         user.setPassword(rs.getString("password_hash"));
         user.setActivated(true);
@@ -97,10 +97,10 @@ public class JdbcUserDao implements UserDao {
         return user;
     }
 
-
-    public String mapRowToUsername(SqlRowSet rs) {
+    private String mapRowToUsername(SqlRowSet rs) {
         String username;
         username = rs.getString("username");
         return username;
     }
+
 }

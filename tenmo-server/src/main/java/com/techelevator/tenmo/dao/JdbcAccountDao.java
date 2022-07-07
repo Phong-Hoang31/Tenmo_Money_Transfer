@@ -18,14 +18,14 @@ public class JdbcAccountDao implements AccountDao {
     public JdbcAccountDao(JdbcTemplate jdbcTemplate) {this.jdbcTemplate = jdbcTemplate;}
 
     @Override
-    public String getUsername(Long userId){
+    public String getUsername(int userId){
         String sql = "SELECT username FROM tenmo_user WHERE user_id = ?";
         String username = jdbcTemplate.queryForObject(sql, String.class, userId);
         return username;
     }
 
     @Override
-    public BigDecimal getBalance(Long userId) {
+    public BigDecimal getBalance(int userId) {
         String sql = "SELECT balance FROM account WHERE user_id = ?;";
         BigDecimal balance = jdbcTemplate.queryForObject(sql, BigDecimal.class, userId);
         return balance;
@@ -33,8 +33,8 @@ public class JdbcAccountDao implements AccountDao {
 
     private Account mapRowToAccount(SqlRowSet rs){
         Account account = new Account();
-        account.setAccountId(rs.getLong("account_id"));
-        account.setUserId(rs.getLong("user_id"));
+        account.setAccountId(rs.getInt("account_id"));
+        account.setUserId(rs.getInt("user_id"));
         account.setBalance(rs.getBigDecimal("balance"));
         return account;
     }

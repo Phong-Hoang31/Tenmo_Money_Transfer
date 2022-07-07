@@ -5,9 +5,9 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 public class Transfer {
-    private Long transferId;
-    private Long senderAccountId;
-    private Long recipientAccountId;
+    private int transferId;
+    private int senderAccountId;
+    private int recipientAccountId;
     private BigDecimal amount;
     private LocalDate date;
     private LocalTime time;
@@ -15,7 +15,7 @@ public class Transfer {
     public Transfer() {
     }
 
-    public Transfer(Long transferId, Long senderAccountId, Long recipientAccountId, BigDecimal amount, LocalDate date, LocalTime time) {
+    public Transfer(int transferId, int senderAccountId, int recipientAccountId, BigDecimal amount, LocalDate date, LocalTime time) {
         this.transferId = transferId;
         this.senderAccountId = senderAccountId;
         this.recipientAccountId = recipientAccountId;
@@ -24,27 +24,27 @@ public class Transfer {
         this.time = time;
     }
 
-    public Long getTransferId() {
+    public int getTransferId() {
         return transferId;
     }
 
-    public void setTransferId(Long transferId) {
+    public void setTransferId(int transferId) {
         this.transferId = transferId;
     }
 
-    public Long getSenderAccountId() {
+    public int getSenderAccountId() {
         return senderAccountId;
     }
 
-    public void setSenderAccountId(Long senderAccountId) {
+    public void setSenderAccountId(int senderAccountId) {
         this.senderAccountId = senderAccountId;
     }
 
-    public Long getRecipientAccountId() {
+    public int getRecipientAccountId() {
         return recipientAccountId;
     }
 
-    public void setRecipientAccountId(Long recipientAccountId) {
+    public void setRecipientAccountId(int recipientAccountId) {
         this.recipientAccountId = recipientAccountId;
     }
 

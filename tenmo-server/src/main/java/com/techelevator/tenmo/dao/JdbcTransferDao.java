@@ -5,6 +5,7 @@ import com.techelevator.tenmo.model.User;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
+import javax.sql.DataSource;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -14,24 +15,38 @@ public class JdbcTransferDao implements TransferDao {
 
     private JdbcTemplate jdbcTemplate;
 
-    public JdbcTransferDao(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    private JdbcAccountDao jdbcAccountDao;
+    private JdbcUserDao jdbcUserDao;
+
+    public JdbcTransferDao(DataSource dataSource, JdbcAccountDao jdbcAccountDao, JdbcUserDao jdbcUserDao) {
+        this.jdbcTemplate = new JdbcTemplate(dataSource);
+        this.jdbcAccountDao = jdbcAccountDao;
+        this.jdbcUserDao = jdbcUserDao;
     }
 
     @Override
     public String createTransfer(String sendingUser, String recipientUser, BigDecimal transferAmount) {
+        boolean senderHasEnoughMoney = false;
+        boolean senderIsNotRecipient = false;
+        boolean transferAmountIsGreaterThanZero = false;
 
-        User user1 = new User();
-        User user2 = new User();
+//        System.out.println("transferAmount = "+ transferAmount);
+        BigDecimal senderBalance = jdbcAccountDao.getBalance(jdbcUserDao.findIdByUsername(sendingUser));
 
-        Account account1 = new Account();
-        Account account2 = new Account();
+        if(senderBalance.compareTo(transferAmount) != -1) {
+            senderHasEnoughMoney = true;
+            System.out.println("senderHasEnoughMoney");
+        }
 
-        user1.setUsername(sendingUser);
-        user2.setUsername(recipientUser);
+        if(!sendingUser.equals(recipientUser)) {
+            senderIsNotRecipient = true;
+            System.out.println("senderIsNotRecipient");
+        }
 
-        account1.setUserId(user1.getUserId());
-        account2.setUserId(user2.getUserId());
+        if(transferAmount.compareTo(BigDecimal.ZERO) == 1) {
+            transferAmountIsGreaterThanZero = true;
+            System.out.println("transferAmountIsGreaterThanZero");
+        }
 
         // create transfer
         String sql = "INSERT INTO transfer (sender_account_id, recipient_account_id, transfer_amount, date, time, status) " +
@@ -42,18 +57,40 @@ public class JdbcTransferDao implements TransferDao {
                 "JOIN account as a ON tu.user_id = a.user_id " +
                 "WHERE username = ?), ?, CURRENT_DATE, CURRENT_TIME, 'Approved') RETURNING status;";
 
-        System.out.println("account balance = " + account1.getBalance());
-        if(account1.getBalance().compareTo(transferAmount) == -1) {
-            return "Not enough funds";
-        }
-        else {
+//        System.out.println("account balance = " + account1.getBalance());
+        if (!senderHasEnoughMoney && senderIsNotRecipient && transferAmountIsGreaterThanZero) {
+            return "Invalid transfer";
+        } else {
+
+            adjustSenderBalance(sendingUser, transferAmount);
+            adjustRecipientBalance(recipientUser, transferAmount);
+
             String status = jdbcTemplate.queryForObject(sql, String.class, sendingUser, recipientUser, transferAmount);
             return status;
         }
     }
 
+    private void adjustSenderBalance(String sendingUser, BigDecimal withdrawAmount) {
+        String sql = "UPDATE account " +
+                "SET " +
+                "balance = ? " +
+                "WHERE user_id = ?;";
+
+        jdbcTemplate.queryForRowSet(sql, jdbcAccountDao.getBalance(jdbcUserDao.findIdByUsername(sendingUser)).subtract(withdrawAmount),jdbcUserDao.findIdByUsername(sendingUser));
+    }
+
+    private void adjustRecipientBalance(String recipientUser, BigDecimal depositAmount) {
+        String sql = "UPDATE account " +
+                "SET " +
+                "balance = ? " +
+                "WHERE user_id = ?;";
+
+        jdbcTemplate.queryForRowSet(sql, jdbcAccountDao.getBalance(jdbcUserDao.findIdByUsername(recipientUser)).subtract(depositAmount), jdbcUserDao.findIdByUsername(recipientUser));
+    }
+
+
     @Override
-    public String getTransfer(Long transferId) {
+    public String getTransfer(int transferId) {
 
         return "";
     }
