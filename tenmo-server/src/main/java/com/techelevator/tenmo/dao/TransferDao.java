@@ -19,7 +19,7 @@ public interface TransferDao {
 
     String requestMoney(String requestingUser, String sendingUser, BigDecimal transferAmount);
 
-
+    List<Transfer> getPendingTransfers(Integer userId);
 
 
 }

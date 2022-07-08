@@ -48,7 +48,6 @@ public class TransferController {
     @GetMapping(path = "transfer/history")
     public List<Transfer> getAllTransfers (Principal principal) throws RestClientException {
         Integer userId = userDao.findIdByUsername(principal.getName());
-//        List<Transfer> transferList = new ArrayList<>();
         return transferDao.getAllTransfers(userId);
     }
 
@@ -64,5 +63,10 @@ public class TransferController {
         String senderUsername = requestDTO.getSendingUsername();
         BigDecimal transferAmount = requestDTO.getTransferAmount();
         return transferDao.requestMoney(requestingUsername, senderUsername, transferAmount);
+    }
+    @GetMapping(path = "transfer/pending")
+    public List<Transfer> getAllPendingTransfers (Principal principal) throws RestClientException {
+        Integer userId = userDao.findIdByUsername(principal.getName());
+        return transferDao.getPendingTransfers(userId);
     }
 }
