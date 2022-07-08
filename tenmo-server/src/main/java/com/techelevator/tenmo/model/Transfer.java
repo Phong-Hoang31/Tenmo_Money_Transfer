@@ -11,17 +11,20 @@ public class Transfer {
     private BigDecimal amount;
     private LocalDate date;
     private LocalTime time;
+    private String status;
+
 
     public Transfer() {
     }
 
-    public Transfer(int transferId, int senderAccountId, int recipientAccountId, BigDecimal amount, LocalDate date, LocalTime time) {
+    public Transfer(int transferId, int senderAccountId, int recipientAccountId, BigDecimal amount, LocalDate date, LocalTime time, String status) {
         this.transferId = transferId;
         this.senderAccountId = senderAccountId;
         this.recipientAccountId = recipientAccountId;
         this.amount = amount;
         this.date = date;
         this.time = time;
+        this.status = status;
     }
 
     public int getTransferId() {
@@ -72,6 +75,14 @@ public class Transfer {
         this.time = time;
     }
 
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
     @Override
     public String toString() {
         return "Transfer{" +
@@ -81,6 +92,8 @@ public class Transfer {
                 ", amount=" + amount +
                 ", date=" + date +
                 ", time=" + time +
+                ", status='" + status + '\'' +
                 '}';
     }
 }
+

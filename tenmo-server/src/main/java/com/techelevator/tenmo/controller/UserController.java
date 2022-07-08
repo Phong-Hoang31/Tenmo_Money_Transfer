@@ -38,12 +38,5 @@ public class UserController {
         }
     }
 
-    @RequestMapping(path = "{userId}/accounts/transfer", method = RequestMethod.GET)
-    public List<String> listOfUsers(@PathVariable int userId, Principal principal) throws UserIdNotFoundException {
-        if (principal.getName().equals(accountDao.getUsername(userId))) {
-            return userDao.getAllUsernames();
-        } else {
-            return null;
-        }
-    }
+
 }

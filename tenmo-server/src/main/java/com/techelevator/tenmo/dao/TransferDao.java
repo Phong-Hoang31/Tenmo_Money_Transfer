@@ -1,9 +1,11 @@
 package com.techelevator.tenmo.dao;
 
 import com.techelevator.tenmo.model.Account;
+import com.techelevator.tenmo.model.Transfer;
 import com.techelevator.tenmo.model.User;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 public interface TransferDao {
 
@@ -11,7 +13,12 @@ public interface TransferDao {
     String createTransfer(String sendingUser, String recipientUser, BigDecimal transferAmount);
 
     // Returns the response Pending, Approved or Denied
-    String getTransfer(int transferId);
+    Transfer getTransfer(Integer userId, Integer transferId);
+
+    List<Transfer> getAllTransfers(Integer userId);
+
+    String requestMoney(String requestingUser, String sendingUser, BigDecimal transferAmount);
+
 
 
 
