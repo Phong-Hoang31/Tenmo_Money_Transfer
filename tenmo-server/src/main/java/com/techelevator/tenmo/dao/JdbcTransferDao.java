@@ -37,17 +37,17 @@ public class JdbcTransferDao implements TransferDao {
 //        System.out.println("transferAmount = "+ transferAmount);
         BigDecimal senderBalance = jdbcAccountDao.getBalance(jdbcUserDao.findIdByUsername(sendingUser));
 
-        if(senderBalance.compareTo(transferAmount) != -1) {
+        if (senderBalance.compareTo(transferAmount) != -1) {
             senderHasEnoughMoney = true;
             System.out.println("senderHasEnoughMoney");
         }
 
-        if(!sendingUser.equals(recipientUser)) {
+        if (!sendingUser.equals(recipientUser)) {
             senderIsNotRecipient = true;
             System.out.println("senderIsNotRecipient");
         }
 
-        if(transferAmount.compareTo(BigDecimal.ZERO) == 1) {
+        if (transferAmount.compareTo(BigDecimal.ZERO) == 1) {
             transferAmountIsGreaterThanZero = true;
             System.out.println("transferAmountIsGreaterThanZero");
         }
@@ -80,7 +80,7 @@ public class JdbcTransferDao implements TransferDao {
                 "balance = ? " +
                 "WHERE user_id = ? RETURNING balance;";
 
-        jdbcTemplate.queryForRowSet(sql, jdbcAccountDao.getBalance(jdbcUserDao.findIdByUsername(sendingUser)).subtract(withdrawAmount),jdbcUserDao.findIdByUsername(sendingUser));
+        jdbcTemplate.queryForRowSet(sql, jdbcAccountDao.getBalance(jdbcUserDao.findIdByUsername(sendingUser)).subtract(withdrawAmount), jdbcUserDao.findIdByUsername(sendingUser));
     }
 
     private void adjustRecipientBalance(String recipientUser, BigDecimal depositAmount) {
@@ -101,10 +101,11 @@ public class JdbcTransferDao implements TransferDao {
                 "JOIN account AS sa ON sa.account_id = transfer.sender_account_id " +
                 "JOIN account AS ra ON ra.account_id = transfer.recipient_account_id " +
                 "WHERE (sa.user_id = ? OR ra.user_id = ?) AND transfer_id = ?;";
-        SqlRowSet rs= jdbcTemplate.queryForRowSet(sql, userId, userId, transferId);
+        SqlRowSet rs = jdbcTemplate.queryForRowSet(sql, userId, userId, transferId);
         if (rs.next()) {
             return mapRowToTransfer(rs);
-        } return null;
+        }
+        return null;
 
     }
 
@@ -116,9 +117,10 @@ public class JdbcTransferDao implements TransferDao {
                 "JOIN account AS ra ON ra.account_id = transfer.recipient_account_id " +
                 "WHERE sa.user_id = ? OR ra.user_id = ?;";
         SqlRowSet rs = jdbcTemplate.queryForRowSet(sql, userId, userId);
-        while (rs.next()){
+        while (rs.next()) {
             allTransfers.add(mapRowToTransfer(rs));
-        } return  allTransfers;
+        }
+        return allTransfers;
     }
 
     @Override
@@ -127,20 +129,19 @@ public class JdbcTransferDao implements TransferDao {
         boolean senderIsNotRecipient = false;
         boolean transferAmountIsGreaterThanZero = false;
 
-//        System.out.println("transferAmount = "+ transferAmount);
         BigDecimal senderBalance = jdbcAccountDao.getBalance(jdbcUserDao.findIdByUsername(sendingUser));
 
-        if(senderBalance.compareTo(transferAmount) != -1) {
+        if (senderBalance.compareTo(transferAmount) != -1) {
             senderHasEnoughMoney = true;
             System.out.println("senderHasEnoughMoney");
         }
 
-        if(!sendingUser.equals(requestingUser)) {
+        if (!sendingUser.equals(requestingUser)) {
             senderIsNotRecipient = true;
             System.out.println("senderIsNotRecipient");
         }
 
-        if(transferAmount.compareTo(BigDecimal.ZERO) == 1) {
+        if (transferAmount.compareTo(BigDecimal.ZERO) == 1) {
             transferAmountIsGreaterThanZero = true;
             System.out.println("transferAmountIsGreaterThanZero");
         }
@@ -172,10 +173,54 @@ public class JdbcTransferDao implements TransferDao {
                 "JOIN account AS ra ON ra.account_id = transfer.recipient_account_id " +
                 "WHERE (sa.user_id = ? OR ra.user_id = ?) AND status = 'Pending';";
         SqlRowSet rs = jdbcTemplate.queryForRowSet(sql, userId, userId);
-        while (rs.next()){
+        while (rs.next()) {
             allPendingTransfers.add(mapRowToTransfer(rs));
-        } return  allPendingTransfers;
+        }
+        return allPendingTransfers;
     }
+
+    @Override
+    public String approveRequest(Integer transferId, String status) {
+
+        String requestingUser = jdbcTemplate.queryForObject("SELECT sender_account_id " +
+                "FROM transfer " +
+                "JOIN account AS sa ON sa.account_id = transfer.sender_account_id " +
+                "JOIN account AS ra ON ra.account_id = transfer.recipient_account_id " +
+                "WHERE transfer_id = ?;", String.class, transferId);
+
+        String sendingUser = jdbcTemplate.queryForObject("SELECT recipient_account_id " +
+                "FROM transfer " +
+                "JOIN account AS sa ON sa.account_id = transfer.sender_account_id " +
+                "JOIN account AS ra ON ra.account_id = transfer.recipient_account_id " +
+                "WHERE transfer_id = ?;", String.class, transferId);
+
+        BigDecimal transferAmount = jdbcTemplate.queryForObject("SELECT transfer_amount " +
+                "FROM transfer " +
+                "JOIN account AS sa ON sa.account_id = transfer.sender_account_id " +
+                "JOIN account AS ra ON ra.account_id = transfer.recipient_account_id " +
+                "WHERE transfer_id = ?;", BigDecimal.class, transferId);
+
+        String sql = "UPDATE transfer " +
+                "SET " +
+                "status = ? " +
+                "WHERE transfer_id = ?  RETURNING status;";
+
+        if (status.equals("Approved")) {
+            jdbcTemplate.queryForObject(sql, String.class, "Approved", transferId);
+
+            String sql2 = "UPDATE account " +
+                    "SET " +
+                    "balance = ? " +
+                    "WHERE user_id = ? RETURNING balance;";
+            adjustSenderBalance(sendingUser, transferAmount);
+            adjustRecipientBalance(requestingUser, transferAmount);
+        } else if (status.equals("Denied")) {
+            jdbcTemplate.queryForObject(sql, String.class, "Denied", transferId);
+        }
+        return status;
+
+    }
+
     private Transfer mapRowToTransfer(SqlRowSet rs) {
         Transfer transfer = new Transfer();
         transfer.setTransferId(rs.getInt("transfer_id"));

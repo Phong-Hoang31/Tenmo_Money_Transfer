@@ -69,4 +69,13 @@ public class TransferController {
         Integer userId = userDao.findIdByUsername(principal.getName());
         return transferDao.getPendingTransfers(userId);
     }
+
+    @RequestMapping(path = "/transfer/{transferId}", method = RequestMethod.PUT)
+    public String approveTransfer(@PathVariable Integer transferId, @RequestBody ApproveDTO approveDTO, Principal principal) throws UserIdNotFoundException, TransactionIdNotFoundException {
+        String status = approveDTO.getStatus();
+
+        return transferDao.approveRequest(transferId, status);
+
+        //TODO: make this return forbidden access error instead of null??????????
+    }
 }

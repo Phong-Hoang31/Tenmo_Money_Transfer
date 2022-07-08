@@ -21,5 +21,7 @@ public interface TransferDao {
 
     List<Transfer> getPendingTransfers(Integer userId);
 
+    String approveRequest (Integer transferId, String status);
+
 
 }
