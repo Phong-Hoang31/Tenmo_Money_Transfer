@@ -182,16 +182,16 @@ public class JdbcTransferDao implements TransferDao {
     @Override
     public String approveRequest(Integer transferId, String status) {
 
-        String requestingUser = jdbcTemplate.queryForObject("SELECT sender_account_id " +
+        String requestingUsername = jdbcTemplate.queryForObject("SELECT username " +
                 "FROM transfer " +
-                "JOIN account AS sa ON sa.account_id = transfer.sender_account_id " +
                 "JOIN account AS ra ON ra.account_id = transfer.recipient_account_id " +
+                "JOIN tenmo_user AS tu ON ra.user_id = tu.user_id " +
                 "WHERE transfer_id = ?;", String.class, transferId);
 
-        String sendingUser = jdbcTemplate.queryForObject("SELECT recipient_account_id " +
+        String sendingUsername = jdbcTemplate.queryForObject("SELECT username " +
                 "FROM transfer " +
                 "JOIN account AS sa ON sa.account_id = transfer.sender_account_id " +
-                "JOIN account AS ra ON ra.account_id = transfer.recipient_account_id " +
+                "JOIN tenmo_user AS tu ON sa.user_id = tu.user_id " +
                 "WHERE transfer_id = ?;", String.class, transferId);
 
         BigDecimal transferAmount = jdbcTemplate.queryForObject("SELECT transfer_amount " +
@@ -207,18 +207,15 @@ public class JdbcTransferDao implements TransferDao {
 
         if (status.equals("Approved")) {
             jdbcTemplate.queryForObject(sql, String.class, "Approved", transferId);
-
-            String sql2 = "UPDATE account " +
-                    "SET " +
-                    "balance = ? " +
-                    "WHERE user_id = ? RETURNING balance;";
-            adjustSenderBalance(sendingUser, transferAmount);
-            adjustRecipientBalance(requestingUser, transferAmount);
+            adjustSenderBalance(sendingUsername, transferAmount);
+            adjustRecipientBalance(requestingUsername, transferAmount);
+            return status;
         } else if (status.equals("Denied")) {
             jdbcTemplate.queryForObject(sql, String.class, "Denied", transferId);
+            return status;
+        } else {
+            return "Invalid response.";
         }
-        return status;
-
     }
 
     private Transfer mapRowToTransfer(SqlRowSet rs) {
