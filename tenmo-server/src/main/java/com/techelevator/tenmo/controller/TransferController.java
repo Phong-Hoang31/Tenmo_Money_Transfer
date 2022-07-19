@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping
 @PreAuthorize("isAuthenticated()")
 public class TransferController {
     private UserDao userDao;
@@ -41,8 +40,6 @@ public class TransferController {
             String recipientUsername = transferDTO.getRecipientUsername();
             BigDecimal transferAmount = transferDTO.getTransferAmount();
             return transferDao.createTransfer(senderUsername, recipientUsername, transferAmount);
-
-            //TODO: make this return forbidden access error instead of null??????????
     }
 
     @GetMapping(path = "transfer/history")
@@ -75,7 +72,5 @@ public class TransferController {
         String status = approveDTO.getStatus();
         Integer transferId = approveDTO.getTransferId();
         return transferDao.approveRequest(transferId, status);
-
-        //TODO: make this return forbidden access error instead of null??????????
     }
 }
