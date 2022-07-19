@@ -171,7 +171,7 @@ public class JdbcTransferDao implements TransferDao {
         String sql = "SELECT * FROM transfer " +
                 "JOIN account AS sa ON sa.account_id = transfer.sender_account_id " +
                 "JOIN account AS ra ON ra.account_id = transfer.recipient_account_id " +
-                "WHERE (sa.user_id = ? OR ra.user_id = ?) AND status = 'Pending';";
+                "WHERE (sa.user_id = ? OR ra.user_id = ?) AND status = 'Pending';"; //todo: pass status as query parameter
         SqlRowSet rs = jdbcTemplate.queryForRowSet(sql, userId, userId);
         while (rs.next()) {
             allPendingTransfers.add(mapRowToTransfer(rs));
@@ -180,7 +180,7 @@ public class JdbcTransferDao implements TransferDao {
     }
 
     @Override
-    public String approveRequest(Integer transferId, String status) {
+    public String approveRequest(Integer transferId, String status) { //todo: get usernames and balance with one SQL query; wrap in try/catch to return 400 error if not found
 
         String requestingUsername = jdbcTemplate.queryForObject("SELECT username " +
                 "FROM transfer " +

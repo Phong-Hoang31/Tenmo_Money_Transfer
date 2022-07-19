@@ -29,13 +29,19 @@ public class UserController {
     }
 
     @ApiOperation("Display user balance")
-    @RequestMapping(path = "{userId}/accounts/balance", method = RequestMethod.GET)
+    @RequestMapping(path = "{userId}/accounts/balance", method = RequestMethod.GET) //todo: url /users/userId/accounts; return all account info
     public BigDecimal getBalance(@PathVariable int userId, Principal principal) throws UserIdNotFoundException {
         if (principal.getName().equals(accountDao.getUsername(userId))) {
             return accountDao.getBalance(userId);
         } else {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "SWIPER NO SWIPING");
         }
+    }
+
+    @RequestMapping(path = "/users", method = RequestMethod.GET)
+    public List<String> listOfUsers() throws UserIdNotFoundException {
+        return userDao.getAllUsernames();
+
     }
 
 
